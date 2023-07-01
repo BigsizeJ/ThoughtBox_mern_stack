@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-slate-900 text-gray-200;
+}
+
+.link {
+  @apply text-base text-gray-600 transition duration-200 hover:text-gray-200 lg:text-lg;
+}
+
+.button {
+  @apply bg-blue-500 text-base md:text-lg px-4 py-1 text-white transition duration-200
+  hover:bg-blue-400;
+}
+
+.link-with-icon {
+  @apply flex gap-x-2 items-center justify-between transition duration-200 hover:text-gray-400;
+}
+
+.form_textarea {
+  @apply p-2 bg-gray-300 resize-none w-full h-28 rounded-sm outline-none text-black
+  focus:outline-offset-2 focus:outline-blue-500 focus:outline-[3px] md:w-[50vw];
+}
+
+.form_tagarea {
+  @apply w-full bg-gray-300 p-2 text-black md:w-[50vw] outline-none rounded-sm
+  focus:outline-offset-2 focus:outline-blue-500 focus:outline-[3px];
+}
+
+.reply {
+  @apply w-full bg-gray-200 h-[8rem] p-2 text-black outline-none rounded-sm resize-none
+  focus:outline-offset-2 focus:outline-blue-500 focus:outline-[3px];
+}
+
+.profile-info {
+  @apply flex gap-x-2  text-gray-300 items-center;
+}
