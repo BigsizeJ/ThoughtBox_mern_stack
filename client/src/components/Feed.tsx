@@ -1,5 +1,5 @@
 import Card from "./Card";
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CardSkeleton from "./CardSkeleton";
 import { useStore } from "../hooks/useStore";
@@ -7,14 +7,16 @@ import { StoreType } from "../hooks/context/StoreProvider";
 
 const Feed = () => {
   const { thoughts, dispatch } = useStore();
+  const [render, setRender] = useState<boolean>(false);
 
   useEffect(() => {
+    console.log("useeffect render");
     (async () => {
       const res = await axios.get("http://localhost:3000/thoughts/popular");
       await new Promise((res) => {
         setTimeout(() => {
           return res("");
-        }, 2000);
+        }, 1500);
       });
       dispatch({ type: StoreType.GET_THOUGHTS, payload: res.data });
     })();

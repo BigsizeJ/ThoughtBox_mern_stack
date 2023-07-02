@@ -1,17 +1,18 @@
-import { FaUserPlus } from "react-icons/fa";
 import { IoIosChatbubbles } from "react-icons/io";
 import { AiFillHeart } from "react-icons/ai";
-
 import { useStore } from "../hooks/useStore";
 import axios from "axios";
 import { StoreType } from "../hooks/context/StoreProvider";
 import GetUser from "./GetUser";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import FollowIcon from "./FollowIcon";
+import { nanoid } from "nanoid";
 
 const Card = ({ thought }: any) => {
   const { user, dispatch } = useStore();
   const [isHearted, setIsHearted] = useState<boolean>(false);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,8 +21,13 @@ const Card = ({ thought }: any) => {
         (hearted: any) => hearted._id === thought._id
       );
       if (alreadyHearted) setIsHearted(true);
+
+      const alreadyFollowed = user.following.find(
+        (u: any) => u._id === thought.creator._id
+      );
+      if (alreadyFollowed) setIsFollowing(true);
     }
-  }, []);
+  }, [user]);
 
   const HeartThought = async () => {
     if (user === null) return;
@@ -48,6 +54,25 @@ const Card = ({ thought }: any) => {
     }
   };
 
+  const handleFollowButton = async () => {
+    if (user === null) return;
+
+    axios.post(`http://localhost:3000/user/follow/${thought.creator._id}`, {
+      userId: user?._id,
+    });
+    setIsFollowing((prev) => !prev);
+  };
+
+  const handleUnfollowButton = async () => {
+    if (user === null) return;
+
+    axios.post(`http://localhost:3000/user/unfollow/${thought.creator._id}`, {
+      userId: user?._id,
+    });
+    const updatedUser = await GetUser();
+    setIsFollowing((prev) => !prev);
+  };
+
   return (
     <div
       key={thought._id}
@@ -67,7 +92,11 @@ const Card = ({ thought }: any) => {
             <div className="flex gap-x-2 items-center">
               <p>{thought.creator.name}</p>
               {thought.creator._id !== user?._id && user && (
-                <FaUserPlus className="cursor-pointer hover:text-blue-500 transition duration-200 md:text-lg" />
+                <FollowIcon
+                  isFollowing={isFollowing}
+                  handleFollowButton={handleFollowButton}
+                  handleUnfollowButton={handleUnfollowButton}
+                />
               )}
             </div>
             <div className="flex gap-x-2 md:gap-x-4">
@@ -95,7 +124,9 @@ const Card = ({ thought }: any) => {
       <p className="text-base line-clamp-3">{thought.thought}</p>
       <div className="flex flex-wrap gap-x-2">
         {thought.tag.map((tag: string) => (
-          <p className="text-gray-500">{tag}</p>
+          <p className="text-gray-500" key={nanoid()}>
+            {tag}
+          </p>
         ))}
       </div>
     </div>

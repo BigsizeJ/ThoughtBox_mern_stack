@@ -21,11 +21,15 @@ const authUserController = async (req, res) => {
       picture: userInfo.payload.picture,
       email: userInfo.payload.email,
       name: userInfo.payload.name,
+      hearted_thought: [],
+      followers: [],
+      following: [],
     };
 
-    const user = await User.findOne({ email: userData.email }).populate(
-      "hearted_thought"
-    );
+    const user = await User.findOne({ email: userData.email })
+      .populate("hearted_thought")
+      .populate("followers")
+      .populate("following");
 
     if (user) return res.status(201).json(user);
 
@@ -33,7 +37,7 @@ const authUserController = async (req, res) => {
     return res.status(201).json(newUser);
   } catch (error) {
     // Handle the error gracefully
-    console.error("Failed to authenticate user:", error);
+    console.error("Failed to authenticate user:");
     res.status(500).json({ error: "Failed to authenticate user." });
   }
 };

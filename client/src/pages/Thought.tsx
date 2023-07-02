@@ -10,11 +10,13 @@ import GetUser from "../components/GetUser";
 import { nanoid } from "nanoid";
 import CommentCard from "../components/CommentCard";
 import Reply from "../components/Reply";
+import FollowIcon from "../components/FollowIcon";
 
 const Thought = () => {
   const { id } = useParams();
   const { user, viewedThought, dispatch } = useStore();
   const [isHearted, setIsHearted] = useState<boolean>(false);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const [thought, setThought] = useState<string>("");
 
   useEffect(() => {
@@ -22,7 +24,6 @@ const Thought = () => {
       .get(`http://localhost:3000/thoughts/${id}`)
       .then(async (res) => {
         const data = await res.data;
-        const upUser = await GetUser();
 
         const newDataWithReply = {
           ...data,
@@ -33,16 +34,27 @@ const Thought = () => {
         };
 
         dispatch({ type: StoreType.VIEWED_THOUGHT, payload: newDataWithReply });
-        const alreadyHearted = upUser?.hearted_thought.find(
-          (hearted: any) => hearted._id === data._id
-        );
-
-        if (alreadyHearted) setIsHearted(true);
       })
       .catch((err) => console.error(err));
-
     return () => {};
   }, []);
+
+  useEffect(() => {
+    if (user && viewedThought) {
+      const alreadyHearted = user.hearted_thought.find(
+        (hearted: any) => hearted._id === viewedThought._id
+      );
+      if (alreadyHearted) setIsHearted(true);
+
+      const alreadyFollowed = user.following.find(
+        (u: any) => u._id === viewedThought.creator._id
+      );
+
+      if (alreadyFollowed) setIsFollowing(true);
+    }
+
+    return () => {};
+  }, [user]);
 
   const HeartThought = async () => {
     if (user === null) return;
@@ -66,7 +78,6 @@ const Thought = () => {
         type: StoreType.UPDATE_HEART_OF_VIEWED_THOUGHT,
         payload: newThought.data.hearts,
       });
-      setIsHearted((prev) => !prev);
     }
   };
 
@@ -79,8 +90,41 @@ const Thought = () => {
     );
     if (res.status === 200) {
       const data = await res.data;
-
       dispatch({ type: StoreType.VIEWED_THOUGHT, payload: data });
+    }
+  };
+
+  const handleFollowButton = async () => {
+    if (user === null) return;
+
+    try {
+      setIsFollowing((prev) => !prev);
+
+      axios.post(
+        `http://localhost:3000/user/follow/${viewedThought.creator._id}`,
+        { userId: user?._id }
+      );
+
+      //   const updatedUser = await GetUser();
+      //   dispatch({ type: StoreType.GET_USER, payload: updatedUser });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleUnfollowButton = async () => {
+    if (user === null) return;
+    try {
+      setIsFollowing((prev) => !prev);
+
+      axios.post(
+        `http://localhost:3000/user/unfollow/${viewedThought.creator._id}`,
+        { userId: user?._id }
+      );
+      //   const updatedUser = await GetUser();
+      //   dispatch({ type: StoreType.GET_USER, payload: updatedUser });
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -98,7 +142,13 @@ const Thought = () => {
                 <p className="text-base lg:text-xl">
                   {viewedThought.creator.name}
                 </p>
-                <FaUserPlus className="mt-1" />
+                {user && user._id !== viewedThought.creator._id && (
+                  <FollowIcon
+                    isFollowing={isFollowing}
+                    handleFollowButton={handleFollowButton}
+                    handleUnfollowButton={handleUnfollowButton}
+                  />
+                )}
               </div>
 
               <p className="text-sm lg:text-base">
@@ -149,9 +199,7 @@ const Thought = () => {
           )}
 
           <section className="flex gap-y-1 flex-col">
-            <h1 className="text-base mb-2 md:text-xl text-gray-400">
-              Interactions
-            </h1>
+            <h1 className="text-base mb-2 md:text-xl text-gray-500">Comment</h1>
 
             {viewedThought.interactions.length <= 0 && (
               <h1 className="text-gray-500 w-full text-center text-lg md:text-xl">
@@ -161,7 +209,7 @@ const Thought = () => {
             <section className="grid gri-flow-cols gap-y-5">
               {viewedThought.interactions.length >= 1 &&
                 viewedThought.interactions.map((comment: any) => (
-                  <CommentCard comment={comment} />
+                  <CommentCard key={comment._id} comment={comment} />
                 ))}
             </section>
           </section>

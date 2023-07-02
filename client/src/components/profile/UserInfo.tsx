@@ -40,12 +40,12 @@ const UserInfo = () => {
               <div className="profile-info gap-1">
                 <FaUsers className="w-6 h-6" />
                 <p className="hidden md:flex">Followers:</p>
-                <p>0</p>
+                <p>{user.followers.length}</p>
               </div>
               <div className="profile-info gap-1">
                 <FaUserCheck className="w-5 h-5" />
                 <p className="hidden md:flex">Following:</p>
-                <p>0</p>
+                <p>{user.following.length}</p>
               </div>
             </div>
           </div>

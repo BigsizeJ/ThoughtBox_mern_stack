@@ -88,7 +88,10 @@ const CommentCard = ({ comment }: any) => {
         {comment.replies.length > 0 &&
           viewReply &&
           comment.replies.map((reply: any) => (
-            <div className="ml-4 border-l border-1 border-gray-500 px-4">
+            <div
+              className="ml-4 border-l border-1 border-gray-500 px-4"
+              key={reply._id}
+            >
               <div className="flex items-center gap-x-2">
                 <img
                   src={reply.creator.picture}
