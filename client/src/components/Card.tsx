@@ -6,7 +6,7 @@ import { useStore } from "../hooks/useStore";
 import axios from "axios";
 import { StoreType } from "../hooks/context/StoreProvider";
 import GetUser from "./GetUser";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Card = ({ thought }: any) => {
@@ -17,7 +17,7 @@ const Card = ({ thought }: any) => {
   useEffect(() => {
     if (user && thought) {
       const alreadyHearted = user.hearted_thought.find(
-        (thought: any) => thought._id === thought._id
+        (hearted: any) => hearted._id === thought._id
       );
       if (alreadyHearted) setIsHearted(true);
     }
@@ -66,10 +66,9 @@ const Card = ({ thought }: any) => {
           <div className="flex items-center justify-between w-full">
             <div className="flex gap-x-2 items-center">
               <p>{thought.creator.name}</p>
-              {thought.creator._id !== user?._id ||
-                (user === null && (
-                  <FaUserPlus className="cursor-pointer hover:text-blue-500 transition duration-200 md:text-lg" />
-                ))}
+              {thought.creator._id !== user?._id && user && (
+                <FaUserPlus className="cursor-pointer hover:text-blue-500 transition duration-200 md:text-lg" />
+              )}
             </div>
             <div className="flex gap-x-2 md:gap-x-4">
               <div className="flex items-center gap-x-1">
@@ -77,7 +76,7 @@ const Card = ({ thought }: any) => {
                   className="transition duration-200 hover:text-blue-500 cursor-pointer md:text-xl"
                   onClick={() => navigate(`/thought/${thought._id}`)}
                 />
-                <p>0</p>
+                <p>{thought.interactions.length}</p>
               </div>
               <div className="flex items-center gap-x-1">
                 <AiFillHeart

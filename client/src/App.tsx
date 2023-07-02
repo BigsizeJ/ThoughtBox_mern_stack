@@ -2,7 +2,7 @@ import Home from "./pages/Home.";
 import Navbar from "./components/Navbar";
 import { Route, Routes } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import { useStore } from "./hooks/useStore";
 import { StoreType } from "./hooks/context/StoreProvider";

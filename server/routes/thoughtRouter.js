@@ -36,14 +36,62 @@ router.post("/:id/modify-heart", async (req, res) => {
     return res.status(200).json();
   } catch (err) {
     res.status(500);
-    return console.error(err);
+    return console.error("There some error modifying a heart");
   }
 });
 
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  const thought = await Thought.findOne({ _id: id }).populate("creator");
+
+  const thought = await Thought.findOne({ _id: id })
+    .populate("creator")
+    .populate("interactions.creator")
+    .populate("interactions.replies.creator");
+
   res.json(thought);
+});
+
+router.post("/interact/:id", async (req, res) => {
+  const { id } = req.params;
+  const { creator, comment } = req.body;
+  const thought = await Thought.findOne({ _id: id })
+    .populate("creator")
+    .populate("interactions.creator")
+    .populate("interactions.replies.creator");
+
+  thought.interactions.push({
+    creator: creator,
+    comment: comment,
+    replies: [],
+  });
+  await thought.populate("interactions.creator");
+  await thought.save();
+
+  res.status(200).json(thought);
+});
+
+router.post("/reply/:id", async (req, res) => {
+  const { id } = req.params;
+  const { creator, commentId, comment } = req.body;
+  const thought = await Thought.findOne({ _id: id })
+    .populate("creator")
+    .populate("interactions.creator")
+    .populate("interactions.replies.creator");
+  thought.interactions = thought.interactions.map((interaction) => {
+    if (interaction._id.toString() === commentId) {
+      return {
+        ...interaction,
+        replies: [
+          ...interaction.replies,
+          { creator: creator, comment, comment },
+        ],
+      };
+    }
+    return interaction;
+  });
+  await thought.populate("interactions.replies.creator");
+  await thought.save();
+  res.status(200).json(thought);
 });
 
 module.exports = router;

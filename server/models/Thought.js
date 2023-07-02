@@ -9,11 +9,26 @@ const ThoughtSchema = new Schema(
       ref: "User",
       required: [true, "heart is required"],
     },
-    interactions: {
-      type: [Schema.Types.ObjectId],
-      ref: "User",
-      required: [true, "interactions is required"],
-    },
+    interactions: [
+      {
+        creator: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+          required: [true, "creator is required"],
+        },
+        comment: Schema.Types.String,
+        replies: [
+          {
+            creator: {
+              type: Schema.Types.ObjectId,
+              ref: "User",
+              required: [true, "creator is required"],
+            },
+            comment: Schema.Types.String,
+          },
+        ],
+      },
+    ],
     creator: {
       type: Schema.Types.ObjectId,
       ref: "User",

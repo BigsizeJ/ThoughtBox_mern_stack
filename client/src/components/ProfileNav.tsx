@@ -1,5 +1,5 @@
+import React, { useState, useRef, useEffect } from "react";
 import { IoIosArrowDown } from "react-icons/io";
-import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 
@@ -62,7 +62,7 @@ const ProfileNav = () => {
       right-1 w-44 transition-all duration-300 gap-y-2 `}
       >
         <Link className="w-full link-with-icon" to="/profile">
-          My thoughts
+          Profile
         </Link>
         <Link className="w-full link-with-icon" to="/profile/interactions">
           Interactions

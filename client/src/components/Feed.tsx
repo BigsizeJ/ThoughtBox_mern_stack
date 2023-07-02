@@ -1,5 +1,5 @@
 import Card from "./Card";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import CardSkeleton from "./CardSkeleton";
 import { useStore } from "../hooks/useStore";

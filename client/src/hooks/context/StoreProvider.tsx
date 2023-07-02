@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useReducer } from "react";
+import React, { ReactNode, createContext, useReducer } from "react";
 
 export enum StoreType {
   GET_USER = "get_user",
@@ -6,6 +6,9 @@ export enum StoreType {
   GET_THOUGHTS = "get_thoughts",
   GET_THOUGHT = "get_thought",
   VIEWED_THOUGHT = "viewed_thought",
+  UPDATE_HEART_OF_VIEWED_THOUGHT = "update_heart_of_viewed_thought",
+  UPDATE_REPLY_OF_VIEWED_THOUGHT = "update_reply_of_viewed_thought",
+  POST_REPLY_FROM_VIEWED_THOUGHT = "post_reply_from_viewed_thought",
 }
 
 interface StoreState {
@@ -44,6 +47,24 @@ const StoreReducer = (state: StoreState, action: StoreAction) => {
         ...state,
         viewedThought: action.payload,
       };
+    case StoreType.UPDATE_HEART_OF_VIEWED_THOUGHT:
+      return {
+        ...state,
+        viewedThought: { ...state.viewedThought, hearts: action.payload },
+      };
+    case StoreType.UPDATE_REPLY_OF_VIEWED_THOUGHT:
+      return {
+        ...state,
+        viewedThought: {
+          ...state.viewedThought,
+          interactions: state.viewedThought.interactions.map((comment: any) => {
+            if (comment._id === action.payload)
+              return { ...comment, isReplying: !comment.isReplying };
+            return { ...comment, isReplying: false };
+          }),
+        },
+      };
+
     default:
       return state;
   }
@@ -54,6 +75,7 @@ const StoreProvider = ({ children }: { children: ReactNode }) => {
     user: null,
     thoughts: null,
     userThoughts: null,
+    viewedThought: null,
   });
 
   return (
